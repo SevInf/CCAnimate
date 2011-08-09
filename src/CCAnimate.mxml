@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Разместить невизуальные элементы (например, службы или объекты значений) -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayList;
+			
+			[Bindable]
+			private var _library: ArrayList = new ArrayList();
+			
+			private function addImageToLibraryClick(e: Event):void {
+				var file: File = new File();
+				
+				file.browseForOpen("Choose file to add", [new FileFilter("PNG Files", "png")]);
+				file.addEventListener(Event.SELECT, imageFileSelected);
+			
+			}
+			
+			private function imageFileSelected(e: Event):void {
+				_library.addItem(e.target);	
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:HorizontalLayout />
+	</s:layout>
+	
+	<s:Panel height="100%" width="20%" title="Animations">
+		<s:layout>
+			<s:VerticalLayout />
+		</s:layout>
+		<s:List  width="100%" height="100%"/>
+	</s:Panel>
+	
+	<s:Group height="100%" width="80%">
+		<s:layout>
+			<s:VerticalLayout verticalAlign="bottom" horizontalAlign="center"/>
+		</s:layout>
+		
+		<s:Image>
+			
+		</s:Image>
+		
+		<s:Button label="Play" />	
+		
+		<s:Panel title="Timeline" width="100%">
+			
+		</s:Panel>
+		
+		
+		<s:Panel title="Library" width="100%">
+			<s:controlBarContent>
+				<s:Button label="Add Image" click="addImageToLibraryClick(event)" />
+			</s:controlBarContent>
+			
+			<s:List dataProvider="{_library}" width="100%" height="100%" 
+					itemRenderer="com.goodnamesaretaken.CCAnimate.LibraryItemRenderer">
+				<s:layout>
+					<s:HorizontalLayout gap="10" verticalAlign="bottom" 
+										paddingTop="10" paddingBottom="10" 
+										paddingLeft="10" paddingRight="10"/>
+				</s:layout>
+			</s:List>
+		</s:Panel>
+		
+		
+	</s:Group>
+	
+	
+</s:WindowedApplication>
