@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:gnat="com.goodnamesaretaken.CCAnimate.*"
+		 currentState="{(animation)?'editing' : 'noAnimation'}">
+	<fx:Declarations>
+		<!-- Разместить невизуальные элементы (например, службы или объекты значений) -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.goodnamesaretaken.CCAnimate.Animation;
+			
+			[Bindable]
+			public var animation: Animation;
+			
+			private function toggleAnimationPlayback():void {
+				preview.play();
+			}
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout verticalAlign.editing="bottom" 
+						  verticalAlign.noAnimation="middle"
+						  horizontalAlign="center"/>
+	</s:layout>
+	
+	<s:states>
+		<s:State name="noAnimation" />
+		<s:State name="editing" />
+	</s:states>
+	
+	<s:Label text="Select animation to edit" includeIn="noAnimation" />
+	
+	<gnat:AnimationPreview id="preview" 
+						   frames="{animation.frames}" 
+						   frameInterval="{animation.frameInterval}" 
+						   excludeFrom="noAnimation" />
+	
+	
+	<s:Panel title="Timeline" width="100%" excludeFrom="noAnimation">
+		<s:controlBarContent>
+			
+			<s:Label text="Frame interval" width="20%" minWidth="100" />
+			
+			<s:HSlider id="frameSlider" stepSize="0.001" minimum="0.001" maximum="1" 
+					   width="80%" 
+					   value="@{animation.frameInterval}"/>
+			
+			<s:Button label="Play" click="toggleAnimationPlayback()"/>
+			
+		</s:controlBarContent>
+		
+		<s:List id="timelineList"
+				dataProvider="{animation.frames}" 
+				width="100%" height="100%" 
+				dragEnabled="true" dropEnabled="true" dragMoveEnabled="true"
+				itemRenderer="com.goodnamesaretaken.CCAnimate.TimelineItemRenderer">
+			
+			<s:layout>
+				<s:HorizontalLayout gap="10" verticalAlign="bottom" 
+									paddingTop="10" paddingBottom="10" 
+									paddingLeft="10" paddingRight="10"/>
+			</s:layout>
+			
+		</s:List>
+	</s:Panel>
+</s:Group>

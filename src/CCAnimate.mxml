@@ -10,10 +10,13 @@
 		<fx:XML format="e4x" id="menuData">
 			<root>
 				<menuitem label="File">
-					<menuitem id="new" label="New project"/>
-					<menuitem id="save" label="Save project"/>
-					<menuitem id="open" label="Open project" />
-					<menuitem id="export" label="Export animations" />
+					<menuitem id="new" keyEquivalent="n" commandKey="true" label="_New project"/>
+					<menuitem id="open" keyEquivalent="o" commandKey="true" label="_Open project" />
+					<menuitem type="separator" />
+					<menuitem id="save" keyEquivalent="s" commandKey="true" label="_Save project"/>
+					<menuitem id="saveas" keyEquivalent="s" commandKey="true" shiftKey="true" label="Save project as..." enabled="false" />
+					<menuitem type="separator" />
+					<menuitem id="export" keyEquivalent="e" commandKey="true" label="_Export animations" />
 				</menuitem>
 			</root>
 		</fx:XML>
@@ -46,9 +49,6 @@
 				_library.removeItem(libraryList.selectedItem);
 			}
 			
-			private function toggleAnimationPlayback():void {
-				preview.play();
-			}
 			
 			private function addAnimation(e: Event): void {
 				var animation:Animation = new Animation();
@@ -198,100 +198,72 @@
 	</fx:Script>
 	
 	<s:menu>
-		<mx:FlexNativeMenu dataProvider="{menuData}" labelField="@label" showRoot="false" itemClick="menuItemClick(event)" />
+		<mx:FlexNativeMenu dataProvider="{menuData}" 
+						   labelField="@label" 
+						   keyEquivalentField="@keyEquivalent" 
+						   showRoot="false" 
+						   itemClick="menuItemClick(event)" />
 			
 	</s:menu>
 	
 	<s:layout>
-		<s:HorizontalLayout />
+		<s:VerticalLayout />
 	</s:layout>
 	
-	<s:Panel height="100%" width="20%" minWidth="250" title="Animations">
+	<s:Group height="70%" width="100%">
 		<s:layout>
-			<s:VerticalLayout />
+			<s:HorizontalLayout />
 		</s:layout>
 		
-		<s:controlBarContent>
-			<s:Button label="Add animation" click="addAnimation(event)" />
-			<s:Button label="Remove animation" click="removeAnimation(event)" enabled="{animationsList.selectedItem != null}" />
-		</s:controlBarContent>
-		
-		<s:List id="animationsList" 
-				width="100%" height="100%" 
-				dataProvider="{_animations}" 
-				itemRenderer="com.goodnamesaretaken.CCAnimate.AnimationListItemRenderer">
-			
+		<s:Panel height="100%" width="20%" minWidth="250" title="Animations">
 			<s:layout>
-				<s:VerticalLayout paddingTop="5" paddingLeft="5" paddingRight="5" paddingBottom="5"/>		
+				<s:VerticalLayout />
 			</s:layout>
 			
-		</s:List>
-	</s:Panel>
-	
-	<s:Group height="100%" width="80%">
-		<s:layout>
-			<s:VerticalLayout verticalAlign="bottom" horizontalAlign="center"/>
-		</s:layout>
-		
-		<gnat:AnimationPreview id="preview" 
-							   frames="{animationsList.selectedItem.frames}" 
-							   frameInterval="{animationsList.selectedItem.frameInterval}" />
-		
-		<s:Panel title="Timeline" width="100%">
 			<s:controlBarContent>
-				
-				<s:Label text="Frame interval" width="20%" minWidth="100" />
-				
-				<s:HSlider id="frameSlider" stepSize="0.001" minimum="0.001" maximum="1" 
-						   width="80%" 
-						   value="@{animationsList.selectedItem.frameInterval}"/>
-				
-				<s:Button label="Play" click="toggleAnimationPlayback()"/>
-				
+				<s:Button label="Add animation" click="addAnimation(event)" />
+				<s:Button label="Remove animation" click="removeAnimation(event)" enabled="{animationsList.selectedItem != null}" />
 			</s:controlBarContent>
 			
-			<s:List id="timelineList"
-					dataProvider="{animationsList.selectedItem.frames}" 
+			<s:List id="animationsList" 
 					width="100%" height="100%" 
-					dragEnabled="true" dropEnabled="true" dragMoveEnabled="true"
-					itemRenderer="com.goodnamesaretaken.CCAnimate.TimelineItemRenderer">
+					dataProvider="{_animations}" 
+					itemRenderer="com.goodnamesaretaken.CCAnimate.AnimationListItemRenderer">
 				
 				<s:layout>
-					<s:HorizontalLayout gap="10" verticalAlign="bottom" 
-										paddingTop="10" paddingBottom="10" 
-										paddingLeft="10" paddingRight="10"/>
+					<s:VerticalLayout paddingTop="5" paddingLeft="5" paddingRight="5" paddingBottom="5"/>		
 				</s:layout>
 				
 			</s:List>
 		</s:Panel>
 		
-		
-		<s:Panel title="Library" width="100%">
-			<s:controlBarContent>
-				
-				<s:Button label="Add Image" click="addImagesToLibrary(event)" />
-				
-				<s:Button label="Remove Image" 
-						  click="removeImageFromLibrary(event)" 
-						  enabled="{libraryList.selectedItem != null}" />
-				
-			</s:controlBarContent>
-			
-			<s:List id="libraryList"
-					dataProvider="{_library}" width="100%" height="100%" 
-					itemRenderer="com.goodnamesaretaken.CCAnimate.LibraryItemRenderer"
-					dragEnabled="true">
-				
-				<s:layout>
-					<s:HorizontalLayout gap="10" verticalAlign="bottom" 
-										paddingTop="10" paddingBottom="10" 
-										paddingLeft="10" paddingRight="10"/>
-				</s:layout>
-			</s:List>
-		</s:Panel>
-		
+		<gnat:AnimationEditor animation="{animationsList.selectedItem}" width="80%" height="100%" />
 		
 	</s:Group>
+	
+	<s:Panel title="Frames Library" width="100%" height="30%">
+		<s:controlBarContent>
+			
+			<s:Button label="Add Image" click="addImagesToLibrary(event)" />
+			
+			<s:Button label="Remove Image" 
+					  click="removeImageFromLibrary(event)" 
+					  enabled="{libraryList.selectedItem != null}" />
+			
+		</s:controlBarContent>
+		
+		<s:List id="libraryList"
+				dataProvider="{_library}" width="100%" height="100%" 
+				itemRenderer="com.goodnamesaretaken.CCAnimate.LibraryItemRenderer"
+				dragEnabled="true">
+			
+			<s:layout>
+				<s:HorizontalLayout gap="10" verticalAlign="bottom" 
+									paddingTop="10" paddingBottom="10" 
+									paddingLeft="10" paddingRight="10"/>
+			</s:layout>
+		</s:List>
+	</s:Panel>
 	
 	
 </s:WindowedApplication>
