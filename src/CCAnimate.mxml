@@ -7,7 +7,16 @@
 					   minHeight="600"
 					   >
 	<fx:Declarations>
-		<!-- Разместить невизуальные элементы (например, службы или объекты значений) -->
+		<fx:XML format="e4x" id="menuData">
+			<root>
+				<menuitem label="File">
+					<menuitem label="New project" enabled="false"/>
+					<menuitem id="save" label="Save project"/>
+					<menuitem label="Open project" enabled="false"/>
+					<menuitem id="export" label="Export animations" enabled="false" />
+				</menuitem>
+			</root>
+		</fx:XML>
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
@@ -15,6 +24,7 @@
 			import com.goodnamesaretaken.CCAnimate.Frame;
 			
 			import mx.collections.ArrayList;
+			import mx.events.FlexNativeMenuEvent;
 			
 			[Bindable]
 			private var _animations: ArrayList = new ArrayList();
@@ -58,9 +68,64 @@
 			}
 			
 			
+			private function menuItemClick(event:FlexNativeMenuEvent): void {
+				var itemId:String = event.item.@id;
+				if (itemId == "save") {
+					var f:File = new File();
+					f.addEventListener(Event.SELECT, saveProjectFileSelected);
+					f.browseForSave("Save project");
+				}
+				
+			}
+			
+			private function serializeProjectAsXML(projectFileDirectory: File): XML {
+				var output:XML = <project></project>;
+				var libraryXML: XML = <library />;
+				
+				for each (var frame: Frame in _library.source) {
+					var item: XML = <file />;
+					item.@path = projectFileDirectory.getRelativePath(new File(frame.originalPath));
+					libraryXML.appendChild(item);
+				}
+				output.appendChild(libraryXML);
+				
+				var animationsXML: XML = <animations/>;
+				for each (var animation: Animation in _animations.source) {
+					var animationXML: XML = <animation />;
+					animationXML.@name = animation.name;
+					animationXML.@interval = animation.frameInterval;
+					
+					for each (var _frame: Frame in animation.frames.source) {
+						var frameXML: XML = <frame />;
+						frameXML.@name = _frame.name;
+						animationXML.appendChild(frameXML);
+					}
+					
+					animationsXML.appendChild(animationXML);
+				}
+				output.appendChild(animationsXML);
+				return output;
+			}
+			
+			private function saveProjectFileSelected(event: Event):void {
+				var data: XML = serializeProjectAsXML(File(event.target.parent));
+				var fileStream:FileStream = new FileStream();
+			
+				fileStream.open(File(event.target), FileMode.WRITE);
+
+				fileStream.writeUTFBytes('<?xml version="1.0" encoding="UTF-8"?>\n');
+				fileStream.writeUTFBytes(data.toXMLString());
+				fileStream.close();
+			}
+			
 			
 		]]>
 	</fx:Script>
+	
+	<s:menu>
+		<mx:FlexNativeMenu dataProvider="{menuData}" labelField="@label" showRoot="false" itemClick="menuItemClick(event)" />
+			
+	</s:menu>
 	
 	<s:layout>
 		<s:HorizontalLayout />

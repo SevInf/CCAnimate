@@ -20,19 +20,19 @@ package com.goodnamesaretaken.CCAnimate
 		 
 		public var bitmapData: BitmapData;
 		
-		private var _fileUrl: String; 
+		private var _filePath: String; 
 		
 		public static function fromFile(f: File): Frame {
 			var result: Frame = new Frame();
 			result.name = f.name;
-			result._fileUrl = f.url;
+			result._filePath = f.nativePath;
 			result.loadBitmapData();
 			return result;
 			
 		}
 		
 		private function loadBitmapData(): void {
-			var request: URLRequest = new URLRequest(_fileUrl);
+			var request: URLRequest = new URLRequest(new File(_filePath).url);
 			
 			var loader: Loader = new Loader();
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e: Event):void {
@@ -42,17 +42,21 @@ package com.goodnamesaretaken.CCAnimate
 			loader.load(request);;
 		}
 		
+		public function get originalPath(): String {
+			return _filePath;
+		}
+		
 		
 		public function readExternal(input:IDataInput):void { 
 			name = input.readObject();
-			_fileUrl = input.readObject();
+			_filePath = input.readObject();
 			loadBitmapData();
 			
 		} 
 		
 		public function writeExternal(output:IDataOutput):void { 
 			output.writeObject(name);
-			output.writeObject(_fileUrl);
+			output.writeObject(_filePath);
 		} 
 	
 	}
