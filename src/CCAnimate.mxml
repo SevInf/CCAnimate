@@ -13,7 +13,7 @@
 					<menuitem id="new" label="New project"/>
 					<menuitem id="save" label="Save project"/>
 					<menuitem id="open" label="Open project" />
-					<menuitem id="export" label="Export animations" enabled="false" />
+					<menuitem id="export" label="Export animations" />
 				</menuitem>
 			</root>
 		</fx:XML>
@@ -22,6 +22,7 @@
 		<![CDATA[
 			import com.goodnamesaretaken.CCAnimate.Animation;
 			import com.goodnamesaretaken.CCAnimate.Frame;
+			import com.goodnamesaretaken.util.PlistUtils;
 			
 			import mx.collections.ArrayList;
 			import mx.events.FlexNativeMenuEvent;
@@ -80,6 +81,10 @@
 					var openFile:File = new File();
 					openFile.addEventListener(Event.SELECT, openProjectFileSelected);
 					openFile.browseForOpen("Open project");
+				} else if (itemId == "export") {
+					var exportFile: File = new File();
+					exportFile.addEventListener(Event.SELECT, exportProjectFileSelected);
+					exportFile.browseForSave("Export animation for cocos2d");
 				}
 				
 			}
@@ -169,6 +174,22 @@
 				
 				var data:XML = new XML(xmlString);
 				deserializeProjectFromXML(data, File(event.target).parent);
+			}
+			
+			private function exportProjectFileSelected(event: Event): void {
+				var exportAnimations: Object = {};
+				for each (var animation: Animation in _animations.source) {
+					var exportObject: Object = {
+						interval: animation.frameInterval,
+						frames:[]
+					};
+					
+					for each (var frame: Frame in animation.frames.source) {
+						exportObject.frames.push(frame.name);
+					}
+					exportAnimations[animation.name] = exportObject;
+				}
+				PlistUtils.saveObject(exportAnimations, File(event.target));
 			}
 			
 			
