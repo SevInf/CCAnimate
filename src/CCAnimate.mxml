@@ -3,6 +3,8 @@
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   xmlns:gnat="com.goodnamesaretaken.CCAnimate.*"
+					   minWidth="800"
+					   minHeight="600"
 					   >
 	<fx:Declarations>
 		<!-- Разместить невизуальные элементы (например, службы или объекты значений) -->
@@ -21,12 +23,16 @@
 			private var _library: ArrayList = new ArrayList();
 			
 			
-			private function addImageToLibraryClick(e: Event):void {
+			private function addImagesToLibrary(e: Event):void {
 				var file: File = new File();
 				
 				file.browseForOpenMultiple("Choose file to add", [new FileFilter("PNG Files", "png")]);
 				file.addEventListener(FileListEvent.SELECT_MULTIPLE, imageFilesSelected);
 			
+			}
+			
+			private function removeImageFromLibrary(e: Event):void {
+				_library.removeItem(libraryList.selectedItem);
 			}
 			
 			private function toggleAnimationPlayback():void {
@@ -39,6 +45,10 @@
 				
 				_animations.addItem(animation);
 				animationsList.selectedItem = animation;
+			}
+			
+			private function removeAnimation(e: Event): void {
+				_animations.removeItem(animationsList.selectedItem);
 			}
 			
 			private function imageFilesSelected(e: FileListEvent):void {
@@ -56,14 +66,14 @@
 		<s:HorizontalLayout />
 	</s:layout>
 	
-	<s:Panel height="100%" width="20%" title="Animations">
+	<s:Panel height="100%" width="20%" minWidth="250" title="Animations">
 		<s:layout>
 			<s:VerticalLayout />
 		</s:layout>
 		
 		<s:controlBarContent>
 			<s:Button label="Add animation" click="addAnimation(event)" />
-			<s:Button label="Remove animation" enabled="{animationsList.selectedItem != null}" />
+			<s:Button label="Remove animation" click="removeAnimation(event)" enabled="{animationsList.selectedItem != null}" />
 		</s:controlBarContent>
 		
 		<s:List id="animationsList" 
@@ -89,12 +99,15 @@
 		
 		<s:Panel title="Timeline" width="100%">
 			<s:controlBarContent>
+				
 				<s:Label text="Frame interval" width="20%" minWidth="100" />
+				
 				<s:HSlider id="frameSlider" stepSize="0.001" minimum="0.001" maximum="1" 
 						   width="80%" 
 						   value="@{animationsList.selectedItem.frameInterval}"/>
 				
-				<s:Button label="Play" click="toggleAnimationPlayback()"/>	
+				<s:Button label="Play" click="toggleAnimationPlayback()"/>
+				
 			</s:controlBarContent>
 			
 			<s:List id="timelineList"
@@ -115,14 +128,20 @@
 		
 		<s:Panel title="Library" width="100%">
 			<s:controlBarContent>
-				<s:Button label="Add Image" click="addImageToLibraryClick(event)" />
-				<s:Button label="Remove Image" enabled="{libraryList.selectedItem != null}" />
+				
+				<s:Button label="Add Image" click="addImagesToLibrary(event)" />
+				
+				<s:Button label="Remove Image" 
+						  click="removeImageFromLibrary(event)" 
+						  enabled="{libraryList.selectedItem != null}" />
+				
 			</s:controlBarContent>
 			
 			<s:List id="libraryList"
 					dataProvider="{_library}" width="100%" height="100%" 
 					itemRenderer="com.goodnamesaretaken.CCAnimate.LibraryItemRenderer"
 					dragEnabled="true">
+				
 				<s:layout>
 					<s:HorizontalLayout gap="10" verticalAlign="bottom" 
 										paddingTop="10" paddingBottom="10" 

@@ -18,12 +18,13 @@
 					currentState = "display";
 				} else {
 					currentState = "edit";
+					editor.setFocus();
 				}
 			}
 		]]>
 	</fx:Script>
 	
-	<s:Label text="{data.name}" excludeFrom="edit" click="toggleEditing(event)" />
+	<s:Label text="{data.name}" excludeFrom="edit" doubleClickEnabled="true" doubleClick="toggleEditing(event)" />
 	
 	<s:TextInput id="editor" text="{data.name}" excludeFrom="display" focusOut="toggleEditing(event)" />
 	
