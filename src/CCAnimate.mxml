@@ -10,9 +10,9 @@
 		<fx:XML format="e4x" id="menuData">
 			<root>
 				<menuitem label="File">
-					<menuitem label="New project" enabled="false"/>
+					<menuitem id="new" label="New project"/>
 					<menuitem id="save" label="Save project"/>
-					<menuitem label="Open project" enabled="false"/>
+					<menuitem id="open" label="Open project" />
 					<menuitem id="export" label="Export animations" enabled="false" />
 				</menuitem>
 			</root>
@@ -70,10 +70,16 @@
 			
 			private function menuItemClick(event:FlexNativeMenuEvent): void {
 				var itemId:String = event.item.@id;
-				if (itemId == "save") {
-					var f:File = new File();
-					f.addEventListener(Event.SELECT, saveProjectFileSelected);
-					f.browseForSave("Save project");
+				if (itemId == "new") {
+					newProject();
+				} if (itemId == "save") {
+					var saveFile:File = new File();
+					saveFile.addEventListener(Event.SELECT, saveProjectFileSelected);
+					saveFile.browseForSave("Save project");
+				} else if (itemId == "open") {
+					var openFile:File = new File();
+					openFile.addEventListener(Event.SELECT, openProjectFileSelected);
+					openFile.browseForOpen("Open project");
 				}
 				
 			}
@@ -107,6 +113,40 @@
 				return output;
 			}
 			
+			private function libraryFrameByName(frameName: String): Frame {
+				for each (var frame: Frame in _library.source) {
+					if (frame.name == frameName) {
+						return frame;
+					}
+				}
+				
+				return null;
+			}
+			
+			private function deserializeProjectFromXML(project: XML, projectFileDirectory: File): void {
+				
+				for each (var file:XML in project.library.file) {
+					var imageFile: File = projectFileDirectory.resolvePath(file.@path);
+					_library.addItem(Frame.fromFile(imageFile));
+				}
+				
+				for each (var animationXML: XML in project.animations.animation) {
+					var animation:Animation = new Animation();
+					animation.name = animationXML.@name;
+					animation.frameInterval = animationXML.@interval;
+					
+					for each (var frameXML:XML in animationXML.frame) {
+						animation.frames.addItem(libraryFrameByName(frameXML.@name));
+					}
+					_animations.addItem(animation);
+				}
+			}
+			
+			private function newProject(): void {
+				_library.removeAll();
+				_animations.removeAll();
+			}
+			
 			private function saveProjectFileSelected(event: Event):void {
 				var data: XML = serializeProjectAsXML(File(event.target.parent));
 				var fileStream:FileStream = new FileStream();
@@ -117,6 +157,20 @@
 				fileStream.writeUTFBytes(data.toXMLString());
 				fileStream.close();
 			}
+			
+			private function openProjectFileSelected(event: Event): void {
+				
+				newProject();
+				
+				var fileStream: FileStream = new FileStream();
+				fileStream.open(File(event.target), FileMode.READ);
+				var xmlString:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+				fileStream.close();
+				
+				var data:XML = new XML(xmlString);
+				deserializeProjectFromXML(data, File(event.target).parent);
+			}
+			
 			
 			
 		]]>
