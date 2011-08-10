@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Image xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<!-- Разместить невизуальные элементы (например, службы или объекты значений) -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.collections.ArrayList;
+			
+			[Bindable]
+			public var frames: ArrayList;
+			
+			[Bindable]
+			public var frameInterval: Number;
+			
+			
+			private var _animationTimer: Timer;
+			
+			public function play(): void {
+				source = frames.getItemAt(0).bitmapData;
+				_animationTimer = new Timer(frameInterval * 1000, frames.length - 1);	
+				_animationTimer.addEventListener(TimerEvent.TIMER, nextFrame);
+				_animationTimer.start();
+			}
+			
+			public function stop():void {
+				_animationTimer.stop();
+			}
+			
+			private function nextFrame(e: TimerEvent): void {
+				this.source = frames.getItemAt(_animationTimer.currentCount).bitmapData;
+			}
+		]]>
+	</fx:Script>
+	
+	
+</s:Image>

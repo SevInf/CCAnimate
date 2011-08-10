@@ -4,11 +4,6 @@
 				xmlns:mx="library://ns.adobe.com/flex/mx" 
 				autoDrawBackground="true">
 	
-	<s:layout>
-		<s:VerticalLayout horizontalAlign="center" gap="3" />
-	</s:layout>
-	
 	<s:Image source="{data.bitmapData}" />
-	<s:Label text="{data.name}" />
 	
 </s:ItemRenderer>

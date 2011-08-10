@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
-					   xmlns:mx="library://ns.adobe.com/flex/mx">
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:gnat="com.goodnamesaretaken.CCAnimate.*"
+					   >
 	<fx:Declarations>
 		<!-- Разместить невизуальные элементы (например, службы или объекты значений) -->
 	</fx:Declarations>
 	<fx:Script>
 		<![CDATA[
+			import com.goodnamesaretaken.CCAnimate.Frame;
+			
 			import mx.collections.ArrayList;
 			
 			[Bindable]
 			private var _library: ArrayList = new ArrayList();
 			
+			[Bindable]
+			private var _timeline: ArrayList = new ArrayList();
+			
 			private function addImageToLibraryClick(e: Event):void {
 				var file: File = new File();
 				
-				file.browseForOpen("Choose file to add", [new FileFilter("PNG Files", "png")]);
-				file.addEventListener(Event.SELECT, imageFileSelected);
+				file.browseForOpenMultiple("Choose file to add", [new FileFilter("PNG Files", "png")]);
+				file.addEventListener(FileListEvent.SELECT_MULTIPLE, imageFilesSelected);
 			
 			}
 			
-			private function imageFileSelected(e: Event):void {
-				_library.addItem(e.target);	
+			private function imageFilesSelected(e: FileListEvent):void {
+				for each (var f: File in e.files) {		
+					_library.addItem(Frame.fromFile(f));	
+				}
+			}
+			
+			private function toggleAnimationPlayback():void {
+				preview.play();
 			}
 			
 		]]>
@@ -43,24 +56,41 @@
 			<s:VerticalLayout verticalAlign="bottom" horizontalAlign="center"/>
 		</s:layout>
 		
-		<s:Image>
+		<gnat:AnimationPreview id="preview" frames="{_timeline}" frameInterval="{frameSlider.value}">
 			
-		</s:Image>
-		
-		<s:Button label="Play" />	
+		</gnat:AnimationPreview>
 		
 		<s:Panel title="Timeline" width="100%">
+			<s:controlBarContent>
+				<s:Label text="Frame interval" width="20%" minWidth="100" />
+				<s:HSlider id="frameSlider" stepSize="0.01" minimum="0.01" maximum="10" width="80%"/>	
+				<s:Button label="Play" click="toggleAnimationPlayback()"/>	
+			</s:controlBarContent>
 			
+			<s:List dataProvider="{_timeline}" 
+					width="100%" height="100%" 
+					dragEnabled="true" dropEnabled="true" dragMoveEnabled="true"
+					itemRenderer="com.goodnamesaretaken.CCAnimate.TimelineItemRenderer">
+				
+				<s:layout>
+					<s:HorizontalLayout gap="10" verticalAlign="bottom" 
+										paddingTop="10" paddingBottom="10" 
+										paddingLeft="10" paddingRight="10"/>
+				</s:layout>
+				
+			</s:List>
 		</s:Panel>
 		
 		
 		<s:Panel title="Library" width="100%">
 			<s:controlBarContent>
 				<s:Button label="Add Image" click="addImageToLibraryClick(event)" />
+				<s:Button label="Remove Image" />
 			</s:controlBarContent>
 			
 			<s:List dataProvider="{_library}" width="100%" height="100%" 
-					itemRenderer="com.goodnamesaretaken.CCAnimate.LibraryItemRenderer">
+					itemRenderer="com.goodnamesaretaken.CCAnimate.LibraryItemRenderer"
+					dragEnabled="true">
 				<s:layout>
 					<s:HorizontalLayout gap="10" verticalAlign="bottom" 
 										paddingTop="10" paddingBottom="10" 
