@@ -182,7 +182,7 @@
 				var exportAnimations: Object = {};
 				for each (var animation: Animation in _animations.source) {
 					var exportObject: Object = {
-						interval: animation.frameInterval,
+						delay: animation.frameInterval,
 						frames:[]
 					};
 					
