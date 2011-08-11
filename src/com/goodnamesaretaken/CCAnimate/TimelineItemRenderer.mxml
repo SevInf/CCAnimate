@@ -3,7 +3,20 @@
 				xmlns:s="library://ns.adobe.com/flex/spark" 
 				xmlns:mx="library://ns.adobe.com/flex/mx" 
 				autoDrawBackground="true">
+
+	<fx:Script>
+		<![CDATA[
+			private function deleteFrame(event: Event): void {
+				Object(owner).dataProvider.removeItem(data);
+			}
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout horizontalAlign="center" />
+	</s:layout>
 	
 	<s:Image source="{data.bitmapData}" />
+	<s:Button label="Delete" click="deleteFrame(event)" />
 	
 </s:ItemRenderer>
