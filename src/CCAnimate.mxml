@@ -179,7 +179,7 @@
 			}
 			
 			private function exportProjectFileSelected(event: Event): void {
-				var exportAnimations: Object = {};
+				var exportAnimations: Object = {animations:{}};
 				for each (var animation: Animation in _animations.source) {
 					var exportObject: Object = {
 						delay: animation.frameInterval,
@@ -189,7 +189,7 @@
 					for each (var frame: Frame in animation.frames.source) {
 						exportObject.frames.push(frame.name);
 					}
-					exportAnimations[animation.name] = exportObject;
+					exportAnimations.animations[animation.name] = exportObject;
 				}
 				PlistUtils.saveObject(exportAnimations, File(event.target));
 			}
