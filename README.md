@@ -2,7 +2,7 @@ CCAnimate animation editor
 ==========================
 
 Installation
-____________
+------------
 
 To install CCAnimate you'll need Adobe Air installed on your machine. You can get Adobe Air for
 your system from http://get.adobe.com/air/
@@ -11,7 +11,7 @@ After your installed Adobe Air just run CCAnimate.air file and you'll see the ap
 Applications folder
 
 Usage
-_____
+-----
 App window contains 4 panels:
 
 1. Animations list. This is simply the list of all of animations you have. To add a new animation 
@@ -23,7 +23,7 @@ frames or reorder existing ones using drag-n-drop. Also, you can adjust animatio
 4. Animation preview.
 
 License
-_______
+-------
 Copyright (C) 2011 by Sergej Tatarincev
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
